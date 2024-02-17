@@ -1,0 +1,129 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: medio
+  annotations:
+    version: v0.0.1
+    description: "article publishing platform"
+spec:
+  components:
+    - name: article
+      type: actor
+      properties:
+        image: file:///home/hlz/rust/gr2/demo/article/build/article_s.wasm
+      traits:
+        - type: spreadscaler
+          properties:
+            replicas: 1
+        - type: linkdef
+          properties:
+            target: postgres
+            values:
+              uri: postgres://admin:password@127.0.0.1:4004/medio?sslmode=disable
+        - type: linkdef
+          properties:
+            target: nats
+            values:
+              URI: 127.0.0.1:4222
+        - type: linkdef
+          properties:
+            target: time
+
+    - name: user
+      type: actor
+      properties:
+        image: file:///home/hlz/rust/gr2/demo/user/build/user_s.wasm
+      traits:
+        - type: spreadscaler
+          properties:
+            replicas: 1
+        - type: linkdef
+          properties:
+            target: postgres
+            values:
+              uri: postgres://admin:password@127.0.0.1:4002/medio?sslmode=disable
+        - type: linkdef
+          properties:
+            target: time
+        - type: linkdef
+          properties:
+            target: password
+        - type: linkdef
+          properties:
+            target: authtoken
+
+    - name: newsletter
+      type: actor
+      properties:
+        image: file:///home/hlz/rust/gr2/demo/newsletter/build/newsletter_s.wasm
+      traits:
+        - type: spreadscaler
+          properties:
+            replicas: 1
+        - type: linkdef
+          properties:
+            target: postgres
+            values:
+              uri: postgres://admin:password@127.0.0.1:4003/medio?sslmode=disable
+        - type: linkdef
+          properties:
+            target: nats
+            values:
+              URI: 127.0.0.1:4222
+              SUBSCRIPTION: medio/newsletter
+        - type: linkdef
+          properties:
+            target: email
+
+    - name: api-gateway
+      type: actor
+      properties:
+        image: file:///home/hlz/rust/gr2/demo/api-gateway/build/api_gateway_s.wasm
+      traits:
+        - type: spreadscaler
+          properties:
+            replicas: 1
+        - type: linkdef
+          properties:
+            target: httpserver
+            values:
+              config_b64: ewogICJhZGRyZXNzIjogIjEyNy4wLjAuMTo4MDgwIiwKICAiY29ycyI6IHsKICAgICJhbGxvd2VkX29yaWdpbnMiOiBbImh0dHA6Ly9sb2NhbGhvc3Q6NTE3MyJdLAogICAgImFsbG93ZWRfaGVhZGVycyI6IFsKICAgICAgImFjY2VwdCIsICJhY2NlcHQtbGFuZ3VhZ2UiLCAiY29udGVudC1sYW5ndWFnZSIsICJjb250ZW50LXR5cGUiLCAieC1jdXN0b21lLWhlYWRlciIKICAgIF0sCiAgICAiYWxsb3dlZF9tZXRob2RzIjogWyAiR0VUIiwgIlBPU1QiLCAiUFVUIiwgIkRFTEVURSIsICJIRUFEIiwgIlBBVENIIiwgICJPUFRJT05TIiBdLAogICAgIm1heF9hZ2Vfc2VjcyI6IDMwMAogIH0sCiAgIm1heF9jb250ZW50X2xlbiI6ICIxMDBNIiwKICAiY2FjaGVfY29udHJvbCI6ICJtYXgtYWdlPTIwIgp9
+        - type: linkdef 
+          properties:
+            target: authtoken
+
+    - name: httpserver
+      type: capability
+      properties:
+        image: wasmcloud.azurecr.io/httpserver:0.17.0
+        contract: wasmcloud:httpserver
+    - name: postgres
+      type: capability
+      properties:
+        image: wasmcloud.azurecr.io/sqldb-postgres:0.6.0
+        contract: wasmcloud:sqldb
+    - name: nats
+      type: capability
+      properties:
+        image: wasmcloud.azurecr.io/nats_messaging:0.17.4
+        contract: wasmcloud:messaging
+    - name: time
+      type: capability
+      properties:
+        image: ghcr.io/kanowfy/time:0.1.0
+        contract: medio:interfaces:time
+    - name: password
+      type: capability
+      properties:
+        image: ghcr.io/kanowfy/password:0.1.0
+        contract: medio:interfaces:password
+    - name: email
+      type: capability
+      properties:
+        image: ghcr.io/kanowfy/email:0.1.0
+        contract: medio:interfaces:email
+    - name: authtoken 
+      type: capability
+      properties:
+        image: ghcr.io/kanowfy/authtoken:0.1.0
+        contract: medio:interfaces:authtoken

@@ -1,0 +1,33 @@
+[[models]]
+path = "../interface"
+files = [
+    "article.smithy",
+    "user.smithy",
+    "newsletter.smithy"
+]
+
+[[models]]
+url = "https://wasmcloud.github.io/interfaces/idl/org.wasmcloud"
+files = [ "wasmcloud-core.smithy", "wasmcloud-model.smithy" ]
+
+[html]
+output_dir = "html"
+[html.parameters]
+minified = true
+
+[rust]
+output_dir = "."
+
+[rust.parameters]
+
+[[rust.files]]
+path = "src/article.rs"
+namespace = "org.kny.medio.article"
+
+[[rust.files]]
+path = "src/user.rs"
+namespace = "org.kny.medio.user"
+
+[[rust.files]]
+path = "src/newsletter.rs"
+namespace = "org.kny.medio.newsletter"

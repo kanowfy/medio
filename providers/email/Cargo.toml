@@ -1,0 +1,21 @@
+[package]
+name = "email"
+version = "0.1.0"
+edition = "2021"
+resolver = "2"
+
+[dependencies]
+async-trait = "0.1"
+tracing = "0.1.37"
+wasmbus-rpc = { version = "0.15", features = ["otel"] }
+email-interface = { path="../../custom-interfaces/email-interface/rust" }
+lettre = "0.11"
+
+# test dependencies
+[dev-dependencies]
+wasmcloud-test-util = "0.9"
+tokio = { version = "1", features = [ "full" ] }
+
+[[bin]]
+name = "email"
+path = "src/main.rs"

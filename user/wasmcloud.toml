@@ -1,0 +1,8 @@
+name = "user"
+language = "rust"
+type = "actor"
+version = "0.1.0"
+
+[actor]
+claims = ["wasmcloud:sqldb", "wasmcloud:builtin:logging", "medio:interfaces:time", "medio:interfaces:password", "medio:interfaces:authtoken"]
+call_alias = "medio_userauth"

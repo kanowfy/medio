@@ -1,0 +1,8 @@
+name = "article"
+language = "rust"
+type = "actor"
+version = "0.1.0"
+
+[actor]
+claims = ["wasmcloud:sqldb", "wasmcloud:messaging", "wasmcloud:builtin:logging", "medio:interfaces:time"]
+call_alias = "medio_articles"
